@@ -25,15 +25,12 @@ public class LoggingAspect {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingAspect.class);
     private final LogRepository logRepository;
-    private final UserRepository userRepository;
 
     @Around("execution(* com.team9.jobbotdari.controller..*(..)) " +
             "|| execution(* com.team9.jobbotdari.service..*(..)) " +
             "|| (execution(* com.team9.jobbotdari.repository..*(..)) " +
             "    && !execution(* com.team9.jobbotdari.repository.LogRepository.*(..)))")
-    public Object logAllLayers(ProceedingJoinPoint joinPoint) throws Throwable {
-        long startTime = System.currentTimeMillis();
-
+    public Object logOnlyOnError(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = methodSignature.getMethod().getName();
@@ -41,32 +38,22 @@ public class LoggingAspect {
 
         User currentUser = getCurrentUser();
 
-        String enterAction = "ENTER: " + className + "." + methodName;
-        String enterDescription = "EXECUTION: " + args;
-        Log enterLog = Log.builder()
-                .user(currentUser)
-                .action(enterAction)
-                .description(enterDescription)
-                .build();
-        logRepository.save(enterLog);
-        log.info("[LOG] Action: {}", enterAction);
-        log.info("[LOG] Description: {}", enterDescription);
+        try {
+            return joinPoint.proceed();
+        } catch (Throwable ex) {
+            String errorAction = "ERROR in: " + className + "." + methodName;
+            String errorDescription = "Arguments: " + args +
+                    "\nException: " + ex.getClass().getSimpleName() + " - " + ex.getMessage();
 
-        Object result = joinPoint.proceed();
-        long duration = System.currentTimeMillis() - startTime;
+            logRepository.save(Log.builder()
+                    .user(currentUser)
+                    .action(errorAction)
+                    .description(errorDescription)
+                    .build());
 
-        String exitAction = "EXIT: " + className + "." + methodName;
-        String exitDescription = "Execution time: " + duration + "ms; Returned: " + result;
-        Log exitLog = Log.builder()
-                .user(currentUser)
-                .action(exitAction)
-                .description(exitDescription)
-                .build();
-        logRepository.save(exitLog);
-        log.info("[LOG] Action: {}", exitAction);
-        log.info("[LOG] Description: {}", exitDescription);
-
-        return result;
+            log.error("[LOG][ERROR] {} - {}", errorAction, errorDescription);
+            throw ex;
+        }
     }
 
     private User getCurrentUser() {

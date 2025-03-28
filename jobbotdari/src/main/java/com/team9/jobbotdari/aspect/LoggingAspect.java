@@ -30,9 +30,7 @@ public class LoggingAspect {
 
     @Around("execution(* com.team9.jobbotdari.controller..*(..)) " +
             "|| execution(* com.team9.jobbotdari.service..*(..))")
-    public Object logAllLayers(ProceedingJoinPoint joinPoint) throws Throwable {
-        long startTime = System.currentTimeMillis();
-
+    public Object logOnlyOnError(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = methodSignature.getMethod().getName();
@@ -40,36 +38,24 @@ public class LoggingAspect {
 
         Long userId = getCurrentUserId();
 
-        String enterAction = "ENTER: " + className + "." + methodName;
-        String enterDescription = "Arguments: " + args;
+        try {
+            return joinPoint.proceed();
+        } catch (Throwable ex) {
+            // 예외 발생 시 Kafka 전송
+            String errorAction = "ERROR in: " + className + "." + methodName;
+            String errorDescription = "Arguments: " + args +
+                    "\nException: " + ex.getClass().getSimpleName() + " - " + ex.getMessage();
 
-        // Kafka로 로그 전송
-        kafkaLogProducer.send("log-topic", LogMessage.builder()
-                .userId(userId)
-                .action(enterAction)
-                .description(enterDescription)
-                .build());
+            kafkaLogProducer.send("log-topic", LogMessage.builder()
+                    .userId(userId)
+                    .action(errorAction)
+                    .description(errorDescription)
+                    .build());
 
-        log.info("[LOG] Action: {}", enterAction);
-        log.info("[LOG] Description: {}", enterDescription);
+            log.error("[LOG][ERROR] {} - {}", errorAction, errorDescription);
 
-        Object result = joinPoint.proceed();
-        long duration = System.currentTimeMillis() - startTime;
-
-        String exitAction = "EXIT: " + className + "." + methodName;
-        String exitDescription = "Execution time: " + duration + "ms; Returned: " + result;
-
-        // Kafka로 로그 전송
-        kafkaLogProducer.send("log-topic", LogMessage.builder()
-                .userId(userId)
-                .action(exitAction)
-                .description(exitDescription)
-                .build());
-
-        log.info("[LOG] Action: {}", exitAction);
-        log.info("[LOG] Description: {}", exitDescription);
-
-        return result;
+            throw ex; // 예외는 그대로 다시 던짐
+        }
     }
 
     private Long getCurrentUserId() {
