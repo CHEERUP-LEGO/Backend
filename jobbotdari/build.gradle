@@ -53,6 +53,9 @@ dependencies {
 
 	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
+
+	// Kafka
+	implementation 'org.springframework.kafka:spring-kafka:3.3.4'
 }
 
 dependencyManagement {

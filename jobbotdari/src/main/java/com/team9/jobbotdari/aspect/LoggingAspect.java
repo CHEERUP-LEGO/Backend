@@ -1,8 +1,9 @@
 package com.team9.jobbotdari.aspect;
 
-import com.team9.jobbotdari.entity.Log;
-import com.team9.jobbotdari.repository.LogRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team9.jobbotdari.kafka.dto.LogMessage;
+import com.team9.jobbotdari.kafka.messagequeue.KafkaLogProducer;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -26,13 +26,10 @@ import java.util.Map;
 public class LoggingAspect {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingAspect.class);
-    private final LogRepository logRepository;
+    private final KafkaLogProducer kafkaLogProducer;  // Kafka 프로듀서 주입
 
     @Around("execution(* com.team9.jobbotdari.controller..*(..)) " +
-            "|| execution(* com.team9.jobbotdari.service..*(..)) " +
-            "|| (execution(* com.team9.jobbotdari.repository..*(..)) " +
-            "    && !execution(* com.team9.jobbotdari.repository.LogRepository.*(..)))")
-  
+            "|| execution(* com.team9.jobbotdari.service..*(..))")
     public Object logAllLayers(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
 
@@ -45,12 +42,14 @@ public class LoggingAspect {
 
         String enterAction = "ENTER: " + className + "." + methodName;
         String enterDescription = "Arguments: " + args;
-        Log enterLog = Log.builder()
+
+        // Kafka로 로그 전송
+        kafkaLogProducer.send("log-topic", LogMessage.builder()
                 .userId(userId)
                 .action(enterAction)
                 .description(enterDescription)
-                .build();
-        logRepository.save(enterLog);
+                .build());
+
         log.info("[LOG] Action: {}", enterAction);
         log.info("[LOG] Description: {}", enterDescription);
 
@@ -59,12 +58,14 @@ public class LoggingAspect {
 
         String exitAction = "EXIT: " + className + "." + methodName;
         String exitDescription = "Execution time: " + duration + "ms; Returned: " + result;
-        Log exitLog = Log.builder()
+
+        // Kafka로 로그 전송
+        kafkaLogProducer.send("log-topic", LogMessage.builder()
                 .userId(userId)
                 .action(exitAction)
                 .description(exitDescription)
-                .build();
-        logRepository.save(exitLog);
+                .build());
+
         log.info("[LOG] Action: {}", exitAction);
         log.info("[LOG] Description: {}", exitDescription);
 
@@ -74,20 +75,19 @@ public class LoggingAspect {
     private Long getCurrentUserId() {
         try {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attributes == null) {
-                return null;
-            }
+            if (attributes == null) return null;
+
             HttpServletRequest request = attributes.getRequest();
             String authHeader = request.getHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
                 String[] parts = token.split("\\.");
-                if (parts.length < 2) {
-                    return null;
-                }
+                if (parts.length < 2) return null;
+
                 String payload = parts[1];
                 byte[] decodedBytes = Base64.getUrlDecoder().decode(payload);
                 String jsonPayload = new String(decodedBytes, StandardCharsets.UTF_8);
+
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, Object> claims = mapper.readValue(jsonPayload, Map.class);
                 Object userIdObj = claims.get("userId");
@@ -101,4 +101,3 @@ public class LoggingAspect {
         return null;
     }
 }
-

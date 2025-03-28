@@ -55,6 +55,9 @@ dependencies {
 	// Model Mapper
 	implementation 'org.modelmapper:modelmapper:2.1.1'
 
+	// Kafka
+	implementation 'org.springframework.kafka:spring-kafka:3.3.4'
+
 	// Mockito
 	testImplementation 'org.mockito:mockito-core'
 	testImplementation 'org.mockito:mockito-junit-jupiter'
