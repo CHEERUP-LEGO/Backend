@@ -56,6 +56,9 @@ dependencies {
 
 	// Kafka
 	implementation 'org.springframework.kafka:spring-kafka:3.3.4'
+
+	// AMQP
+	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
 }
 
 dependencyManagement {

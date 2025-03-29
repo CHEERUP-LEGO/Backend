@@ -72,6 +72,9 @@ dependencies {
 	testImplementation 'org.springframework:spring-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.4.3'
+
+	// AMQP
+	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
 }
 
 dependencyManagement {

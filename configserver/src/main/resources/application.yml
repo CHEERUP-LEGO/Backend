@@ -8,7 +8,8 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/LGCNS-AM-Camp-PJT1-Team9/resources.git
+#          uri: https://github.com/LGCNS-AM-Camp-PJT1-Team9/resources.git
+          uri: https://github.com/CHEERUP-LEGO/resources.git
           search-paths:
             - eureka-server
             - gateway-server
@@ -17,5 +18,16 @@ spring:
           username: ${GIT_USERNAME}
           password: ${GIT_PW}
           default-label: main
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
 server:
   port: 8071
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httptrace, busrefresh
