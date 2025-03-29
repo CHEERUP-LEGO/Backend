@@ -13,15 +13,15 @@ public class AppInitializer {
     private final SaraminApiConfig saraminApiConfig;
     private final RecruitmentService recruitmentService;
 
-    @PostConstruct
-    public void init() throws InterruptedException {
-        saraminApiConfig.setCount(15);  // PostConstruct 실행 시 count = 15
-        // 채용 정보 추가
-        recruitmentService.addRecruitment();
-    }
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void afterPostConstruct() {
-        saraminApiConfig.setCount(30);
-    }
+//    @PostConstruct
+//    public void init() throws InterruptedException {
+//        saraminApiConfig.setCount(15);  // PostConstruct 실행 시 count = 15
+//        // 채용 정보 추가
+//        recruitmentService.addRecruitment();
+//    }
+//
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void afterPostConstruct() {
+//        saraminApiConfig.setCount(30);
+//    }
 }
