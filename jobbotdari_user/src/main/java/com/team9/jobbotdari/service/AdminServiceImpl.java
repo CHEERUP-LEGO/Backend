@@ -57,9 +57,10 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<LogListResponseDto> getLogs() {
-        Pageable pageable = (Pageable) PageRequest.of(0, 10);
-        Page<Log> logPages = logRepository.findAll(pageable);
-        List<Log> logs = logPages.getContent();
+//        Pageable pageable = (Pageable) PageRequest.of(0, 10);
+//        Page<Log> logPages = logRepository.findAll(pageable);
+//        List<Log> logs = logPages.getContent();
+        List<Log> logs = logRepository.findAll();
 
         return logs.stream()
                 .map(log -> LogListResponseDto.builder()

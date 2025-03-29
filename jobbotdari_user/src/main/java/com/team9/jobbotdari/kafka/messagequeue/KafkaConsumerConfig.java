@@ -24,8 +24,6 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
-        System.out.println("⚠️ Kafka Consumer 설정 확인: " + props);
-
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
