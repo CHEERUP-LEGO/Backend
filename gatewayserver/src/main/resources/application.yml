@@ -12,6 +12,88 @@ spring:
     username: guest
     password: guest
 
+  cloud:
+    gateway:
+      routes:
+#       jobbotdari - CompanyController
+        - id: jobbotdari-Company-GET
+          uri: lb://JOBBOTDARI
+          predicates:
+            - Path=/api/company/**
+            - Method=GET
+        - id: jobbotdari-Company-POST
+          uri: lb://JOBBOTDARI
+          predicates:
+            - Path=/api/company
+            - Method=POST
+
+#       jobbotdari - RecruitmentController
+        - id: jobbotdari-Recruit-GET
+          uri: lb://JOBBOTDARI
+          predicates:
+            - Path=/api/recruitment/**
+            - Method=GET
+
+#       jobbotdari-user - AdminController
+        - id: jobbotdari-user-Admin-GET
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/admin/**
+            - Method=GET
+
+        - id: jobbotdari-user-Admin-POST
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/admin/company
+            - Method=POST
+
+        - id: jobbotdari-user-Admin-DELETE
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/admin/users/{userId}
+            - Method=DELETE
+
+#       jobbotdari-user - ProfileController
+        - id: jobbotdari-user-Profile-GET
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/api/profile
+            - Method=GET
+        - id: jobbotdari-user-Profile-PATCH
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/api/profile
+            - Method=PATCH
+        - id: jobbotdari-user-Profile-file-GET
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/api/files/{filename}
+            - Method=GET
+
+#       jobbotdari-user - UserController
+        - id: jobbotdari-user-Auth-POST
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/api/auth/**
+            - Method=POST
+
+#       jobbotdari-user - UserInterestController
+        - id: jobbotdari-user-User-GET
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/api/user/interests
+            - Method=GET
+        - id: jobbotdari-user-User-POST
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/api/user/interests
+            - Method=POST
+        - id: jobbotdari-user-User-DELETE
+          uri: lb://JOBBOTDARI-USER
+          predicates:
+            - Path=/api/user/interests/{companyId}
+            - Method=DELETE
+
 management:
   endpoints:
     web:
