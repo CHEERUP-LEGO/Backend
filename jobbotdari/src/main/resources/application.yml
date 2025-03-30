@@ -10,13 +10,6 @@ spring:
     username: guest
     password: guest
 
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/springbootdb?characterEncoding=UTF-8&serverTimeZone=Asia/Seoul
-    username: root
-    password: 1234
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
 management:
   endpoints:
     web:
