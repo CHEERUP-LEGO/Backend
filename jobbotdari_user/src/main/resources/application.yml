@@ -12,6 +12,21 @@ spring:
     username: guest
     password: guest
 
+
+file:
+  upload-dir: uploads/
+  access-url: https://mini-project-team7-jiwon.s3.us-east-2.amazonaws.com/uploads/
+
+cloud:
+  aws:
+    s3:
+      bucket-name: mini-project-team7-jiwon
+      base-url: https://mini-project-team7-jiwon.s3.us-east-2.amazonaws.com/
+    region: us-east-2
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+
 management:
   endpoints:
     web:
