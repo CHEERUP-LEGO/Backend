@@ -50,27 +50,27 @@ public class ProfileController {
         return ResponseEntity.ok().body(Map.of("code", 200, "data", true));
     }
 
-    @GetMapping("/files/{filename}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        try {
-            // 파일 경로 생성
-            Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists()) {
-                // 파일명 URL 인코딩 (RFC 5987 방식)
-                String encodedFilename = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8)
-                        .replace("+", "%20");
-
-                return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG) // 기본 MIME 타입 (PNG, JPG 지원 가능)
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encodedFilename)
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (MalformedURLException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+//    @GetMapping("/files/{filename}")
+//    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+//        try {
+//            // 파일 경로 생성
+//            Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
+//            Resource resource = new UrlResource(filePath.toUri());
+//
+//            if (resource.exists()) {
+//                // 파일명 URL 인코딩 (RFC 5987 방식)
+//                String encodedFilename = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8)
+//                        .replace("+", "%20");
+//
+//                return ResponseEntity.ok()
+//                        .contentType(MediaType.IMAGE_JPEG) // 기본 MIME 타입 (PNG, JPG 지원 가능)
+//                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encodedFilename)
+//                        .body(resource);
+//            } else {
+//                return ResponseEntity.notFound().build();
+//            }
+//        } catch (MalformedURLException e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
 }

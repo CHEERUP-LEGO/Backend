@@ -7,6 +7,7 @@ import com.team9.jobbotdari.dto.response.UserListResponseDto;
 import com.team9.jobbotdari.entity.Log;
 import com.team9.jobbotdari.entity.User;
 import com.team9.jobbotdari.exception.user.UserNotFoundException;
+import com.team9.jobbotdari.repository.FileRepository;
 import com.team9.jobbotdari.repository.LogRepository;
 import com.team9.jobbotdari.repository.UserRepository;
 import com.team9.jobbotdari.security.CustomUserDetails;
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final LogRepository logRepository;
+    private final FileRepository fileRepository;
+
+    private final FileService fileService;
 
     private final JobbotariFeignClient jobbotariFeignClient;
 
@@ -52,6 +56,11 @@ public class AdminServiceImpl implements AdminService {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException();
         }
+        // 기존 파일 삭제 후 새로운 파일 저장
+        fileRepository.findTopByUserIdOrderByCreatedAtDesc(userId).ifPresent(existingFile -> {
+            fileService.deleteFileFromS3(existingFile.getFilePath());
+            fileRepository.delete(existingFile);
+        });
         userRepository.deleteById(userId);
     }
 

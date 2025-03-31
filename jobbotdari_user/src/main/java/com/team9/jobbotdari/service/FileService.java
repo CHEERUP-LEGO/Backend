@@ -12,10 +12,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-//import java.io.FileOutputStream;
 import java.io.IOException;
-//import java.nio.file.Path;
-//import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +21,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileService {
     private final FileRepository fileRepository;
-//    @Value("${file.upload-dir}")
-//    private String uploadDir;
     private final S3Client s3Client;
 
     @Value("${cloud.aws.s3.bucket-name}") // 추가: S3 버킷 이름 설정값 주입
@@ -66,16 +61,8 @@ public class FileService {
                     software.amazon.awssdk.core.sync.RequestBody.fromBytes(multipartFile.getBytes())
             );
 
-//            Path filePath = Paths.get(uploadDir, originalFilename);
-//            java.io.File file = filePath.toFile();
-//            file.getParentFile().mkdirs(); // 디렉토리 생성
-//
-//            try (FileOutputStream fos = new FileOutputStream(file)) {
-//                fos.write(multipartFile.getBytes());
-//            }
 
             // 기존 파일 삭제 후 새로운 파일 저장
-//            fileRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId()).ifPresent(fileRepository::delete);
             fileRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId()).ifPresent(existingFile -> {
                 deleteFileFromS3(existingFile.getFilePath());
                 fileRepository.delete(existingFile);
@@ -84,7 +71,6 @@ public class FileService {
             File savedFile = File.builder()
                     .user(user)
                     .filename(originalFilename)
-//                    .filePath(filePath.toString())
                     .filePath(s3key)
                     .build();
 
@@ -96,7 +82,7 @@ public class FileService {
     }
 
     // S3에서 파일 삭제
-    private void deleteFileFromS3(String s3key) {
+    public void deleteFileFromS3(String s3key) {
         try {
             s3Client.deleteObject(DeleteObjectRequest.builder()
                     .bucket(bucketName)
@@ -105,11 +91,6 @@ public class FileService {
         } catch (Exception e) {
             log.error("S3에서 파일 삭제 중 오류 발생: {}", e.getMessage());
         }
-    }
-
-    // 파일 URL 반환
-    public String getFileUrl(String s3key) {
-        return baseUrl + s3key;
     }
 
     // 파일 확장자 추출 메서드
