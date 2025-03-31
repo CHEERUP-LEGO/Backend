@@ -6,11 +6,7 @@ spring:
   config:
     import: "optional:configserver:http://localhost:8071"
 #    import: "optional:configserver:http://config-server:8071"
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: guest
-    password: guest
+
 
 # 정적 매핑 -> 기존에 설정된 동적 매핑 사용
 #  cloud:
@@ -94,9 +90,3 @@ spring:
 #          predicates:
 #            - Path=/api/user/interests/{companyId}
 #            - Method=DELETE
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh, health, beans, httptrace, busrefresh
