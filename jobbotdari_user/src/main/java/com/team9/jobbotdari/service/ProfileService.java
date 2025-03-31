@@ -35,7 +35,7 @@ public class ProfileService {
 
         File file = fileRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId()).orElse(null);
 
-        String fileUrl = (file != null) ? fileAccessUrl + file.getFilename() : null;
+        String fileUrl = (file != null) ? fileAccessUrl + file.getFilePath().replaceFirst("^/?uploads/", "") : null;
 
         return new ProfileResponseDto(
                 user.getId(),

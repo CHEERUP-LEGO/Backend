@@ -82,7 +82,7 @@ public class FileService {
     }
 
     // S3에서 파일 삭제
-    private void deleteFileFromS3(String s3key) {
+    public void deleteFileFromS3(String s3key) {
         try {
             s3Client.deleteObject(DeleteObjectRequest.builder()
                     .bucket(bucketName)
