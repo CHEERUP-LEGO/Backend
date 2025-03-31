@@ -20,7 +20,7 @@ spring:
           default-label: main
   rabbitmq:
     host: rabbitmq
-    port: 5672
+    port: 15672
     username: guest
     password: guest
 server:
