@@ -25,6 +25,7 @@ public class Company {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column
     private String websiteUrl;
 
     @CreationTimestamp
