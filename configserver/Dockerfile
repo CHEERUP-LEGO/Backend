@@ -14,6 +14,7 @@ ARG GIT_PW
 ENV GIT_USERNAME=${GIT_USERNAME}
 ENV GIT_PW=${GIT_PW}
 
+RUN echo "GIT_USERNAME is: ${GIT_USERNAME}" && echo "GIT_PW is: ${GIT_PW}"
 VOLUME /tmp
 COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
 EXPOSE 8071
