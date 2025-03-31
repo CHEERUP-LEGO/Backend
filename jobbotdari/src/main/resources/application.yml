@@ -2,8 +2,8 @@ spring:
   application:
     name: jobbotdari
   config:
-    import: "optional:configserver:http://localhost:8071"
-#    import: "optional:configserver:http://config-server:8071"
+#    import: "optional:configserver:http://localhost:8071"
+    import: "optional:configserver:http://config-server:8071"
   rabbitmq:
     host: 127.0.0.1
     port: 5672
