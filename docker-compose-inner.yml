@@ -1,0 +1,89 @@
+services:
+  config-server:
+    container_name: config-server
+    image: 356677661957.dkr.ecr.us-east-2.amazonaws.com/lego/images:configserver-latest
+    platform: linux/amd64
+    networks:
+      - my-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8071/actuator/health"]
+      interval: 5s
+      retries: 10
+      start_period: 30s
+
+  eureka-server:
+    container_name: eureka-server
+    image: 356677661957.dkr.ecr.us-east-2.amazonaws.com/lego/images:eurekaserver-latest
+    platform: linux/amd64
+    networks:
+      - my-network
+    depends_on:
+      - config-server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 5s
+      retries: 10
+      start_period: 30s
+
+  gateway-server:
+    container_name: gateway-server
+    image: 356677661957.dkr.ecr.us-east-2.amazonaws.com/lego/images:gatewayserver-latest
+    platform: linux/amd64
+    networks:
+      - my-network
+    ports:
+      - "8072:8072"
+    depends_on:
+      - eureka-server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8072/actuator/health"]
+      interval: 5s
+      retries: 10
+      start_period: 30s
+
+  jobbotdari:
+    container_name: jobbotdari
+    image: 356677661957.dkr.ecr.us-east-2.amazonaws.com/lego/images:jobbotdari-latest
+    platform: linux/amd64
+    networks:
+      - my-network
+    depends_on:
+      - eureka-server
+    environment:
+      - SPRING_APPLICATION_NAME=jobbotdari
+      - SPRING_PROFILES_ACTIVE=default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      retries: 10
+      start_period: 30s
+
+  jobbotdari-user:
+    container_name: jobbotdari-user
+    image: 356677661957.dkr.ecr.us-east-2.amazonaws.com/lego/images:jobbotdari_user-latest
+    platform: linux/amd64
+    networks:
+      - my-network
+    depends_on:
+      - eureka-server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 5s
+      retries: 10
+      start_period: 30s
+
+  frontend:
+    container_name: frontend
+    image: 356677661957.dkr.ecr.us-east-2.amazonaws.com/lego/images:frontend-latest
+    platform: linux/amd64
+    networks:
+      - my-network
+    ports:
+      - "5173:5173"
+    depends_on:
+      - gateway-server
+    command: [ "npm", "run", "dev", "--", "--host" ]
+
+networks:
+  my-network:
+    driver: bridge
