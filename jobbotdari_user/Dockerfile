@@ -6,6 +6,13 @@ RUN gradle build --no-daemon -x test
 
 FROM openjdk:21-jdk-slim
 
+# AWS Credentials
+ARG ACCESS_KEY
+ARG SECRET_KEY
+
+ENV ACCESS_KEY=${ACCESS_KEY}
+ENV SECRET_KEY=${SECRET_KEY}
+
 VOLUME /tmp
 COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
 EXPOSE 8080
