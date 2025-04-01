@@ -1,6 +1,6 @@
 spring:
   application:
-    name: jobbotdari-user
+    name: jobbotdari-user-8080-dns
   profiles:
     active: dev
   config:

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: jobbotdari
+    name: jobbotdari-8081-dns
   config:
 #    import: "optional:configserver:http://localhost:8071"
     import: "optional:configserver:http://config-server-8071-dns:8071"
