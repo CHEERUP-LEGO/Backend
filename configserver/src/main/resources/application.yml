@@ -11,10 +11,10 @@ spring:
 #          uri: https://github.com/LGCNS-AM-Camp-PJT1-Team9/resources.git
           uri: https://github.com/CHEERUP-LEGO/resources.git
           search-paths:
-            - eureka-server
-            - gateway-server
-            - jobbotdari-user
-            - jobbotdari
+            - eureka-server-8070-dns
+            - gateway-server-8072-dns
+            - jobbotdari-user-8080-dns
+            - jobbotdari-8081-dns
           username: ${GIT_USERNAME}
           password: ${GIT_PW}
           default-label: main
